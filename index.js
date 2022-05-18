@@ -3,7 +3,7 @@ const app = express()
 const port = process.env.PORT || 5000;
 const cors = require('cors');
 require('dotenv').config()
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 // middleware
 app.use(cors());
@@ -26,6 +26,20 @@ async function run() {
             const query = {};
             const results = await tasksCollections.find(query).toArray();
             res.send(results);
+        });
+
+        app.post('/tasks', async(req, res) => {
+            const data= req.body;
+            const result = await tasksCollections.insertOne(data);
+            res.send(result);
+        });
+
+
+        app.delete('/tasks/:id', async(req, res) => {
+            const id=req.params.id;
+            const query = {_id: ObjectId(id)};
+            const result = await tasksCollections.deleteOne(query);
+            res.send(result);
         })
 
         app.get('/', (req, res) => {
